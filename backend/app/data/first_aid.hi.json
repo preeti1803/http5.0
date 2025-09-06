@@ -1,0 +1,38 @@
+{
+    "burn": {
+      "title": "Jalan ke liye prathamik upchar",
+      "bullet_points": [
+        "Jale hue hisse ko thande paani se dhoyen.",
+        "Vahan par koi cream ya tel na lagayen.",
+        "Saaf kapde se dhak den.",
+        "Agar jaldi theek na ho, to doctor se milen."
+      ]
+    },
+    "cut": {
+      "title": "Chot ya katne par prathamik upchar",
+      "bullet_points": [
+        "Chot ko paani se saaf karein.",
+        "Rakt-srav rokne ke liye halka dabav dalen.",
+        "Anti-septic cream lagayen aur bandage bandhen.",
+        "Agar gehri chot ho to turant hospital jayen."
+      ]
+    },
+    "snakebite": {
+      "title": "Saamp ke katne par prathamik upchar",
+      "bullet_points": [
+        "Shaant rahen aur ghabrayen nahi.",
+        "Kante hue ang ko jyaada hilaen nahi.",
+        "Kante hue jagah ko paani se dhoyen.",
+        "Turant 108 par call karke madad mangein."
+      ]
+    },
+    "fever": {
+      "title": "Bukhaar ke liye prathamik upchar",
+      "bullet_points": [
+        "Bahut saara paani aur taral padarth piyen.",
+        "Aaraam karein.",
+        "Bheega hua kapda mathe par rakhen.",
+        "Agar bukhaar badh jaaye to doctor se salah lein."
+      ]
+    }
+  }
