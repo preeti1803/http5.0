@@ -30,7 +30,7 @@ function App() {
         {isAuthenticated && <Navbar />}
 
         <Routes>
-          <Route path="/" element={<LandingPage onGetStarted = {() => console.log("hello")}  />} />
+          <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/healthtips" element={<HealthTips/>} />

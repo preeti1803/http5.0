@@ -1,16 +1,13 @@
 import React, { useState } from "react";
 import Card from "../components/Card";
 import Button from "../components/Button";
-import { motion } from "motion/react";
 import { CheckCircle, Stethoscope, Hospital, Users, Shield } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-interface LandingPageProps {
-  onGetStarted: () => void;
-}
-
-export function LandingPage({ onGetStarted }: LandingPageProps) {
+export function LandingPage() {
   const [showModal, setShowModal] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const languages = [
     { code: "hi", name: "हिंदी", englishName: "Hindi", flag: "🇮🇳", users: "40 cr+" },
@@ -20,48 +17,47 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
 
   const handleLanguageSelect = (langCode: string) => {
     setSelectedLanguage(langCode);
+    navigate("/login"); // navigate after selection
   };
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-blue-50 to-white">
-      {/* Hero Section */}
+      {/* Banner Section */}
       <section className="relative bg-blue-600 text-white py-16">
-        <div className="container mx-auto px-6 text-center">
-          <motion.h1
-            className="text-4xl md:text-5xl font-bold mb-4"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            स्वास्थ्य सहायक
-          </motion.h1>
-          <p className="text-lg md:text-xl mb-6">
-            AI-Powered Rural Healthcare Assistant
-          </p>
-          <Button
-            onClick={onGetStarted}
-            className="px-8 py-3 text-lg font-semibold rounded-xl"
-          >
+        <div className="container mx-auto px-6 flex flex-col md:flex-row items-center md:items-center md:justify-between min-h-[500px]">
+          {/* Left side text */}
+          <div className="text-left max-w-lg flex flex-col justify-center h-full">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 leading-snug">
+              AI-Powered Healthcare{" "}
+              <span className="block text-yellow-300">
+                For Rural Communities
+              </span>
+            </h2>
+            <p className="text-lg text-gray-100 leading-relaxed mb-6">
+              Get instant health guidance in your local language. Our AI
+              assistant helps rural communities access quality healthcare with
+              voice support, emergency services, and offline capabilities.
+            </p>
+
+            <button
+              onClick={() => setShowModal(true)}
+              className="w-32 py-2 bg-white text-black font-medium rounded-lg shadow-md hover:bg-gray-100 transition center"
+             >
             Get Started
-          </Button>
+            </button>
+
+          </div>
+
+          {/* Right side image */}
+          <div className="md:w-1/2 mt-8 md:mt-0 flex justify-center">
+            <img
+              src="/assets/banner.png" // replace with your uploaded image path
+              alt="Banner illustration"
+              className="max-w-md w-full"
+            />
+          </div>
         </div>
       </section>
-
-      {/* AI Powered Section */}
-      <section className="py-12 bg-blue-50">
-        <div className="container mx-auto px-6 text-center max-w-3xl">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            AI-Powered Healthcare
-            <span className="block text-blue-600">For Rural Communities</span>
-          </h2>
-          <p className="text-lg text-gray-700 leading-relaxed">
-            Get instant health guidance in your local language. Our AI assistant
-            helps rural communities access quality healthcare with voice support,
-            emergency services, and offline capabilities.
-          </p>
-        </div>
-      </section>
-
-
 
       {/* Features Section */}
       <section className="py-12 bg-white">
@@ -94,51 +90,6 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
               </p>
             </Card>
           </div>
-        </div>
-      </section>
-            {/* Language Selection Section */}
-      <section className="py-12 bg-white">
-        <div className="container mx-auto px-6 max-w-md">
-          <Card className="w-full space-y-4 p-6">
-            <h3 className="text-xl font-bold text-center mb-2">Choose Your Language</h3>
-            {languages.map((lang) => (
-              <button
-                key={lang.code}
-                onClick={() => handleLanguageSelect(lang.code)}
-                className={`w-full p-4 rounded-xl border-2 text-left transition-all mb-2 flex justify-between items-center
-                  ${
-                    selectedLanguage === lang.code
-                      ? "border-blue-500 bg-blue-50"
-                      : "border-gray-200 hover:border-blue-300 hover:bg-blue-50"
-                  }`}
-              >
-                <div className="flex items-center space-x-3">
-                  <span className="text-2xl">{lang.flag}</span>
-                  <div>
-                    <div className="font-bold text-gray-900">{lang.name}</div>
-                    <div className="text-sm text-gray-600">{lang.englishName}</div>
-                  </div>
-                </div>
-                {selectedLanguage === lang.code && (
-                  <CheckCircle className="w-5 h-5 text-blue-500" />
-                )}
-              </button>
-            ))}
-            <Button
-              onClick={() => {
-                if (selectedLanguage) {
-                  onGetStarted();
-                }
-              }}
-              className={`w-full py-4 text-lg font-bold rounded-xl ${
-                selectedLanguage
-                  ? "bg-blue-600 hover:bg-blue-700"
-                  : "bg-gray-300 text-gray-500 cursor-not-allowed pointer-events-none"
-              }`}
-            >
-              Get Started
-            </Button>
-          </Card>
         </div>
       </section>
 
@@ -187,29 +138,44 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
         </h2>
       </section>
 
-      {/* Modal */}
+      {/* Language Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center p-4">
-          <Card className="max-w-md w-full relative">
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center p-4 z-50">
+          <Card className="max-w-md w-full relative p-6 space-y-4">
             <button
               className="absolute top-2 right-2 text-gray-500"
               onClick={() => setShowModal(false)}
             >
               ✕
             </button>
-            <h3 className="text-xl font-bold mb-2">About Our Platform</h3>
-            <p className="text-gray-600 mb-4">
-              Our AI-powered healthcare assistant is designed to bridge the gap
-              between rural communities and healthcare providers by offering
-              voice-first symptom checking, hospital discovery, and reliable
-              preventive care tips.
-            </p>
-            <Button
-              onClick={() => setShowModal(false)}
-              className="w-full py-3 rounded-xl"
-            >
-              Close
-            </Button>
+            <h3 className="text-xl font-bold mb-2 text-center">
+              Choose Your Language
+            </h3>
+            {languages.map((lang) => (
+              <button
+                key={lang.code}
+                onClick={() => handleLanguageSelect(lang.code)}
+                className={`w-full p-4 rounded-xl border-2 text-left transition-all mb-2 flex justify-between items-center
+                  ${
+                    selectedLanguage === lang.code
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-gray-200 hover:border-blue-300 hover:bg-blue-50"
+                  }`}
+              >
+                <div className="flex items-center space-x-3">
+                  <span className="text-2xl">{lang.flag}</span>
+                  <div>
+                    <div className="font-bold text-gray-900">{lang.name}</div>
+                    <div className="text-sm text-gray-600">
+                      {lang.englishName}
+                    </div>
+                  </div>
+                </div>
+                {selectedLanguage === lang.code && (
+                  <CheckCircle className="w-5 h-5 text-blue-500" />
+                )}
+              </button>
+            ))}
           </Card>
         </div>
       )}
