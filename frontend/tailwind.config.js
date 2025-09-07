@@ -7,7 +7,13 @@ module.exports = {
     extend: {
       animation: {
         'spin-slow': 'spin 20s linear infinite',
-      }
+      },
+      keyframes: {
+        progress: {
+          '0%': { width: '0%' },
+          '100%': { width: '100%' },
+        },
+      },
     },
   },
   plugins: [],
