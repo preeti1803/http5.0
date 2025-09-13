@@ -3,7 +3,11 @@ import { useNavigate } from "react-router-dom";
 import illustration from "../assets/images/illustration.png";
 import Greeting from "../components/Greeting";
 
-const Login: React.FC = () => {
+interface LoginProps {
+  onAuth: () => void;
+}
+
+const Login: React.FC<LoginProps> = ({ onAuth }) => {
   const navigate = useNavigate();
 
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -49,6 +53,8 @@ const Login: React.FC = () => {
 
       const data = await response.json();
       localStorage.setItem("user", JSON.stringify(data.user));
+
+      onAuth(); // ✅ Update App.tsx auth state so Navbar shows
       navigate("/home");
     } catch (err) {
       console.error("Login failed:", err);

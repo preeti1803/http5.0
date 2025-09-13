@@ -2,15 +2,18 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { mockDb } from "../services/mockDb";
 import { SignupForm } from "../types/auth";
-import illustration from '../assets/images/illustration.png'; // replace with your asset
+import illustration from "../assets/images/illustration.png";
 
-const Signup = () => {
+interface SignupProps {
+  onAuth: () => void;
+}
+
+const Signup: React.FC<SignupProps> = ({ onAuth }) => {
   const navigate = useNavigate();
+
   const [formData, setFormData] = useState<SignupForm>({
     name: "",
     phoneNumber: "",
-    age: 0,
-    gender: "male",
     otp: "",
   });
 
@@ -46,15 +49,16 @@ const Signup = () => {
       const isValid = await mockDb.verifyOTP(formData.phoneNumber, formData.otp);
       if (!isValid) {
         throw new Error("Invalid or expired OTP");
-      }      
+      }
+
       const user = await mockDb.createUser({
         name: formData.name,
         phone: formData.phoneNumber,
-        age: formData.age,
-        gender: formData.gender,
       });
 
       localStorage.setItem("user", JSON.stringify(user));
+
+      onAuth(); // ✅ FIX: tells App.tsx to update Navbar state
       navigate("/home");
     } catch (error) {
       setError(error instanceof Error ? error.message : "Signup failed");
@@ -68,16 +72,13 @@ const Signup = () => {
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl flex flex-col md:flex-row overflow-hidden">
         
         {/* Left Illustration */}
-        {/* Illustration Section */}
-{/* Illustration Section */}
-<div className="flex items-center justify-center w-full md:w-1/2 bg-white p-8 order-first md:order-none">
-  <img
-    src={illustration}
-    alt="Signup Illustration"
-    className="w-3/4 max-w-xs md:max-w-md lg:max-w-lg object-contain"
-  />
-</div>
-
+        <div className="flex items-center justify-center w-full md:w-1/2 bg-white p-8 order-first md:order-none">
+          <img
+            src={illustration}
+            alt="Signup Illustration"
+            className="w-3/4 max-w-xs md:max-w-md lg:max-w-lg object-contain"
+          />
+        </div>
 
         {/* Right Signup Form */}
         <div className="w-full md:w-1/2 p-8 flex flex-col justify-center">
@@ -115,33 +116,6 @@ const Signup = () => {
                   }
                   disabled={showOtp}
                 />
-                <input
-                  type="number"
-                  required
-                  placeholder="Age"
-                  min="1"
-                  max="120"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  value={formData.age || ""}
-                  onChange={(e) =>
-                    setFormData({ ...formData, age: parseInt(e.target.value) })
-                  }
-                />
-                <select
-                  required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
-                  value={formData.gender}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      gender: e.target.value as "male" | "female" | "other",
-                    })
-                  }
-                >
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                  <option value="other">Other</option>
-                </select>
               </>
             )}
 
@@ -180,8 +154,7 @@ const Signup = () => {
           </form>
 
           {/* Divider */}
-          <div className="flex items-center my-6">
-          </div>
+          <div className="flex items-center my-6"></div>
           <p className="mt-6 text-center text-sm text-gray-600">
             Already have an account?{" "}
             <button

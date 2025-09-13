@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import logo from '../assets/images/logo.png';
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
@@ -18,9 +19,9 @@ const Navbar: React.FC = () => {
           {/* Logo */}
           <div className="flex items-center space-x-2">
             <img
-              src="/logo.png"
+              src={logo}
               alt="Logo"
-              className="w-10 h-10 rounded-full"
+              className="w-12 h-12 rounded-full"
             />
             <div>
               <h1 className="text-lg font-bold">स्वास्थ्य सहायक</h1>

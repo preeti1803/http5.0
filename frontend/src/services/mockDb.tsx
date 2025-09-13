@@ -2,8 +2,6 @@ interface User {
   id: string;
   name: string;
   phone: string;
-  age: number;
-  gender: 'male' | 'female' | 'other';
   createdAt: Date;
 }
 

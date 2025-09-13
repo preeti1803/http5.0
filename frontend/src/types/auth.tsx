@@ -5,8 +5,7 @@ export interface LoginForm {
 
 export interface SignupForm extends LoginForm {
   name: string;
-  age: number;
-  gender: 'male' | 'female' | 'other';
+
 }
 export interface Hospital {
   id: string;
@@ -26,15 +25,13 @@ export interface User {
   id: string;
   name: string;
   phone: string; // Note: using 'phone' instead of 'phoneNumber'
-  age: number;
-  gender: 'male' | 'female' | 'other';
+
   createdAt: Date;
 }
 
 export interface SignupForm {
   name: string;
   phoneNumber: string;
-  age: number;
-  gender: 'male' | 'female' | 'other';
+  
   otp: string;
 }

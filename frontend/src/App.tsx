@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { LanguageProvider } from './Context/LanguageContext';
 import { LandingPage } from './pages/LandingPage';
 import Login from './pages/Login';
 import Home from './pages/Home';
@@ -15,6 +16,7 @@ import EditProfile from './pages/EditProfile';
 import HealthTips from './pages/WellBeing';
 import History from './pages/History';
 
+
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   const isAuthenticated = !!localStorage.getItem('user');
   return isAuthenticated ? <>{children}</> : <Navigate to="/login" />;
@@ -22,31 +24,32 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
 
 function App() {
   const [isListening, setIsListening] = React.useState(false);
-  const [isAuthenticated, setIsAuthenticated] = React.useState(!!localStorage.getItem('user'));
+  const [isAuthenticated, setIsAuthenticated] = React.useState(
+    !!localStorage.getItem('user')
+  );
 
-  // 🔥 Keep auth state synced with localStorage
+  // ✅ Sync auth state with localStorage
   useEffect(() => {
     const handleStorageChange = () => {
       setIsAuthenticated(!!localStorage.getItem('user'));
     };
-
     window.addEventListener('storage', handleStorageChange);
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
   return (
+    <LanguageProvider>
     <BrowserRouter>
+    
       <div className="min-h-screen bg-gray-50">
-        {/* ✅ Navbar will show only if authenticated */}
+        {/* ✅ Navbar visible only when authenticated */}
         {isAuthenticated && <Navbar />}
 
         <Routes>
           <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
+          {/* Pass setter so Login/Signup can update auth immediately */}
+          <Route path="/login" element={<Login onAuth={() => setIsAuthenticated(true)} />} />
+          <Route path="/signup" element={<Signup onAuth={() => setIsAuthenticated(true)} />} />
           <Route path="/healthtips" element={<HealthTips />} />
           <Route path="/history" element={<History />} />
           <Route path="/edit-profile" element={<EditProfile />} />
@@ -147,6 +150,7 @@ function App() {
         <Footer />
       </div>
     </BrowserRouter>
+    </LanguageProvider>
   );
 }
 
