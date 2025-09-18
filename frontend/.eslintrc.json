@@ -1,0 +1,9 @@
+{
+  "extends": [
+    "react-app",
+    "react-app/jest"
+  ],
+  "rules": {
+    // Add custom rules here if you want to override CRA defaults
+  }
+}

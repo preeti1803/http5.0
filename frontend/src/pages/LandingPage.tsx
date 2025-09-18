@@ -16,11 +16,13 @@ import {
   Users,
 } from "lucide-react";
 import { useLanguage } from "../Context/LanguageContext";
+import landing from "../assets/images/landing.jpg"
 
 export function LandingPage() {
   const { selectedLang, setSelectedLang, translations } = useLanguage();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+
 
   const navigate = useNavigate();
 
@@ -28,7 +30,7 @@ export function LandingPage() {
   const handleLanguageChange = (langCode: string) => {
     setSelectedLang(langCode);
     setDropdownOpen(false);
-    setModalOpen(false);
+    
 
     // Sync with Google Translate widget
     const selectEl = document.querySelector<HTMLSelectElement>(".goog-te-combo");
@@ -221,11 +223,11 @@ export function LandingPage() {
                 "Start Now | अभी शुरू करें"}
             </button>
           </div>
-          <div className="flex justify-center">
+          <div className="flex justify-center ">
             <img
-              src="https://source.unsplash.com/600x500/?doctor,healthcare"
+              src= {landing}
               alt="Doctor and family using mobile health technology"
-              className="rounded-2xl shadow-2xl max-w-md w-full"
+              className="rounded-2xl shadow-xl max-w-md w-full transform scale-105"
             />
           </div>
         </div>

@@ -16,10 +16,50 @@ const Home: React.FC<HomeScreenProps> = ({
   onEmergencyCall,
   onFindHospital,
   onFirstAid,
-  dailyStreak,
+  
 }) => {
   const navigate = useNavigate()
   const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const [dailyStreak, setDailyStreak] = React.useState(1);
+
+
+  React.useEffect(() => {
+  if (!user?.id) return;
+
+  const lastVisitKey = `lastVisit_${user.id}`;
+  const streakKey = `streak_${user.id}`;
+
+  const lastVisit = localStorage.getItem(lastVisitKey);
+  let streak = parseInt(localStorage.getItem(streakKey) || "0", 10);
+
+  const today = new Date();
+  const todayStr = today.toDateString();
+
+  if (lastVisit === todayStr) {
+    // Already visited today, do nothing
+  } else {
+    // Increment streak if last visit was yesterday
+    if (lastVisit) {
+      const yesterday = new Date();
+      yesterday.setDate(today.getDate() - 1);
+      if (new Date(lastVisit).toDateString() === yesterday.toDateString()) {
+        streak += 1;
+      } else {
+        // Reset streak if last visit was earlier than yesterday
+        streak = 1;
+      }
+    } else {
+      // First-time user
+      streak = 1;
+    }
+    localStorage.setItem(streakKey, streak.toString());
+    localStorage.setItem(lastVisitKey, todayStr);
+  }
+  setDailyStreak(streak);
+}, [user?.id]);
+
+
+  
 
   // Health tips
   const healthTips = [

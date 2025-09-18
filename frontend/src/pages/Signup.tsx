@@ -143,7 +143,7 @@ const Signup: React.FC<SignupProps> = ({ onAuth }) => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 text-white font-semibold py-3 rounded-full hover:bg-blue-700 transition-colors disabled:opacity-50"
+              className="w-full bg-[#009688] text-white font-semibold py-3 rounded-full hover:bg-[#009688] transition-colors disabled:opacity-50"
             >
               {loading
                 ? "Processing..."

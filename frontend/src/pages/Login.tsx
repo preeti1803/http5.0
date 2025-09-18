@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import illustration from "../assets/images/illustration.png";
-import Greeting from "../components/Greeting";
 
 interface LoginProps {
   onAuth: () => void;
@@ -16,58 +15,39 @@ const Login: React.FC<LoginProps> = ({ onAuth }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSendOtp = async (e: React.FormEvent) => {
+  // Show OTP input (mock)
+  const handleSendOtp = (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setLoading(true);
-    try {
-      const res = await fetch("/api/auth/send-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phoneNumber }),
-      });
 
-      if (!res.ok) throw new Error("Failed to send OTP");
-
-      setShowOtp(true);
-    } catch (err) {
-      console.error("OTP send failed:", err);
-      setError("Failed to send OTP. Please try again.");
-    } finally {
-      setLoading(false);
+    if (!phoneNumber.match(/^[0-9]{10}$/)) {
+      setError("Enter a valid 10-digit phone number");
+      return;
     }
+
+    setShowOtp(true); // Show OTP input
   };
 
-  const handleLogin = async (e: React.FormEvent) => {
+  // Low-fidelity login: accept only 123456
+  const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setLoading(true);
-    try {
-      const response = await fetch("/api/auth/verify-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phoneNumber, otp }),
-      });
 
-      if (!response.ok) throw new Error("Invalid OTP");
+    if (otp === "123456") {
+      const user = { phoneNumber };
+      localStorage.setItem("user", JSON.stringify(user));
 
-      const data = await response.json();
-      localStorage.setItem("user", JSON.stringify(data.user));
-
-      onAuth(); // ✅ Update App.tsx auth state so Navbar shows
+      onAuth();
+      
       navigate("/home");
-    } catch (err) {
-      console.error("Login failed:", err);
-      setError("Invalid OTP. Please try again.");
-    } finally {
-      setLoading(false);
+    } else {
+      setError("Invalid OTP. Use 123456 for demo.");
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-blue-500 px-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl flex flex-col md:flex-row overflow-hidden">
-        
         {/* Left Illustration */}
         <div className="flex items-center justify-center w-full md:w-1/2 bg-white p-8 order-1 md:order-none">
           <img
@@ -108,8 +88,7 @@ const Login: React.FC<LoginProps> = ({ onAuth }) => {
               <input
                 type="text"
                 required
-                placeholder="Enter 6-digit OTP"
-                pattern="[0-9]{6}"
+                placeholder="Enter OTP"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
@@ -125,17 +104,13 @@ const Login: React.FC<LoginProps> = ({ onAuth }) => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 text-white font-semibold py-3 rounded-full hover:bg-blue-700 transition-colors disabled:opacity-50"
+              // onClick={() => navigate("/home")}
+              className="w-full bg-[#009688] text-white font-semibold py-3 rounded-full hover:bg-[#009688] transition-colors disabled:opacity-50"
             >
-              {loading
-                ? "Processing..."
-                : showOtp
-                ? "Verify OTP"
-                : "Send OTP"}
+              {showOtp ? "Login" : "Continue"}
             </button>
           </form>
 
-          {/* Signup Link */}
           <p className="mt-6 text-center text-sm text-gray-600">
             Don’t have an account?{" "}
             <button

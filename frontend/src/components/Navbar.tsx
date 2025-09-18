@@ -32,8 +32,9 @@ const Navbar: React.FC = () => {
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-6 font-bold">
             <Link to="/home" className="text-gray-700 hover:text-blue-600">Home</Link>
-            <Link to="/healthtips" className="text-gray-700 hover:text-blue-600">WellBeing</Link>
+            <Link to="/records" className="text-gray-700 hover:text-blue-600">Records</Link>
             <Link to="/history" className="text-gray-700 hover:text-blue-600">History</Link>
+            <Link to="/alerts" className="text-gray-700 hover:text-blue-600">Alerts</Link>
           </div>
 
           {/* Right Section */}
@@ -41,7 +42,7 @@ const Navbar: React.FC = () => {
             <Link to="/profile" className="text-gray-700 hover:text-blue-600">👤 Profile</Link>
             <button
               onClick={handleLogout}
-              className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+              className="bg-[#009688] text-white px-4 py-2 rounded hover:bg-red-700"
             >
               Logout
             </button>
@@ -77,19 +78,20 @@ const Navbar: React.FC = () => {
           >
             Home
           </Link>
-          <Link
-            to="/healthtips"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-          >
-            WellBeing
-          </Link>
+          
           <Link
             to="/history"
             onClick={() => setMobileMenuOpen(false)}
             className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
           >
             History
+          </Link>
+                    <Link
+            to="/alerts"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+          >
+            ALerts
           </Link>
           <Link
             to="/profile"
@@ -104,6 +106,7 @@ const Navbar: React.FC = () => {
           >
             Logout
           </button>
+          
         </div>
       )}
     </nav>
