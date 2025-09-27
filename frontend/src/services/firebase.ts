@@ -1,9 +1,12 @@
-// firebase.js
+// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getAuth,RecaptchaVerifier,signInWithPhoneNumber } from "firebase/auth";
-import {getAnalytics} from "firebase/analytics";
+import { getAnalytics } from "firebase/analytics";
+import {getAuth} from "firebase/auth";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
-// For Firebase JS SDK v7.20.0 and later, m
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyCXNkKHIcpzmOktP-eYf54zC9I_MSWOr9A",
   authDomain: "http-783a8.firebaseapp.com",
@@ -17,5 +20,4 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
-const auth = getAuth(app);
-export{auth,RecaptchaVerifier,signInWithPhoneNumber};
+export const auth = getAuth(app)

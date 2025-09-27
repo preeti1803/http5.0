@@ -182,7 +182,7 @@ export function MyRecords() {
       <div className="max-w-4xl mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="text-4xl mb-4">📊</div>
+          
           <h2 className="text-2xl mb-2 text-gray-900">My Health Records</h2>
           <p className="text-lg text-[#009688]">मेरे स्वास्थ्य रिकॉर्ड</p>
           <p className="text-gray-600 mt-2">

@@ -53,7 +53,7 @@ const VoiceInput: React.FC<SymptomInputScreenProps> = ({
 
     if (SpeechRecognition) {
       const recognition = new SpeechRecognition();
-      recognition.lang = "hi-IN"; // Default Hindi, can change dynamically
+      recognition.lang = "mar-IN"; // Default Hindi, can change dynamically
       recognition.continuous = false;
       recognition.interimResults = true;
 
@@ -97,7 +97,7 @@ const VoiceInput: React.FC<SymptomInputScreenProps> = ({
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-blue-900 via-blue-700 to-indigo-900 text-white">
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-teal-700 via-teal-600 to-teal-500 text-white">
       <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col justify-center min-h-screen">
         {/* Header */}
         <div className="text-center mb-8 sm:mb-12">

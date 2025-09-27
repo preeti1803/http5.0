@@ -103,7 +103,7 @@ export function AlertsNotifications() {
   const playNotificationAudio = (notification) => {
     if ("speechSynthesis" in window) {
       const utterance = new SpeechSynthesisUtterance(notification[language].audio);
-      utterance.lang = language === "hi" ? "hi-IN" : "en-IN";
+      utterance.lang = language === "en-IN";
       speechSynthesis.speak(utterance);
     }
   };
@@ -124,33 +124,11 @@ export function AlertsNotifications() {
       <div className="max-w-4xl mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="text-4xl mb-4">🔔</div>
-          <h2 className="text-2xl mb-2 text-gray-900">Alerts & Notifications</h2>
-          <p className="text-lg text-[#009688]">अलर्ट और नोटिफिकेशन</p>
+          <h2 className="text-2xl mb-2 text-gray-900 text-bold">Alerts & Notifications</h2>
+        
 
           {/* Language Toggle */}
-          <div className="mt-4 flex justify-center gap-2">
-            <button
-              onClick={() => setLanguage("en")}
-              className={`px-4 py-2 rounded ${
-                language === "en"
-                  ? "bg-[#009688] text-white"
-                  : "bg-gray-200 text-gray-800"
-              }`}
-            >
-              English
-            </button>
-            <button
-              onClick={() => setLanguage("hi")}
-              className={`px-4 py-2 rounded ${
-                language === "hi"
-                  ? "bg-[#009688] text-white"
-                  : "bg-gray-200 text-gray-800"
-              }`}
-            >
-              हिंदी
-            </button>
-          </div>
+          
         </div>
 
         {/* Summary Cards */}

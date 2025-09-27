@@ -3,13 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { mockDb } from "../services/mockDb";
 import { SignupForm } from "../types/auth";
 import illustration from "../assets/images/illustration.png";
+import { useAuth } from "../Context/AuthContext"; // Import useAuth hook
 
-interface SignupProps {
-  onAuth: () => void;
-}
-
-const Signup: React.FC<SignupProps> = ({ onAuth }) => {
+const Signup: React.FC = () => {
   const navigate = useNavigate();
+  const { login } = useAuth(); // Use the login function from context
 
   const [formData, setFormData] = useState<SignupForm>({
     name: "",
@@ -19,12 +17,22 @@ const Signup: React.FC<SignupProps> = ({ onAuth }) => {
 
   const [showOtp, setShowOtp] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [toast, setToast] = useState({
+    message: "",
+    type: "",
+    isVisible: false,
+  });
+
+  const showToast = (message: string, type: 'success' | 'error') => {
+    setToast({ message, type, isVisible: true });
+    setTimeout(() => {
+      setToast((prev) => ({ ...prev, isVisible: false }));
+    }, 3000);
+  };
 
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
 
     try {
       const existingUser = await mockDb.getUserByPhone(formData.phoneNumber);
@@ -33,8 +41,10 @@ const Signup: React.FC<SignupProps> = ({ onAuth }) => {
       }
       await mockDb.sendOTP(formData.phoneNumber);
       setShowOtp(true);
+      showToast("OTP sent successfully! Please check your phone.", "success");
     } catch (error) {
-      setError(error instanceof Error ? error.message : "Failed to send OTP");
+      const errorMessage = error instanceof Error ? error.message : "Failed to send OTP";
+      showToast(errorMessage, "error");
     } finally {
       setLoading(false);
     }
@@ -43,7 +53,6 @@ const Signup: React.FC<SignupProps> = ({ onAuth }) => {
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
 
     try {
       const isValid = await mockDb.verifyOTP(formData.phoneNumber, formData.otp);
@@ -56,12 +65,11 @@ const Signup: React.FC<SignupProps> = ({ onAuth }) => {
         phone: formData.phoneNumber,
       });
 
-      localStorage.setItem("user", JSON.stringify(user));
-
-      onAuth(); // ✅ FIX: tells App.tsx to update Navbar state
+      login(user); // Call the login function from the context
       navigate("/home");
     } catch (error) {
-      setError(error instanceof Error ? error.message : "Signup failed");
+      const errorMessage = error instanceof Error ? error.message : "Signup failed";
+      showToast(errorMessage, "error");
     } finally {
       setLoading(false);
     }
@@ -70,7 +78,6 @@ const Signup: React.FC<SignupProps> = ({ onAuth }) => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-blue-500 px-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl flex flex-col md:flex-row overflow-hidden">
-        
         {/* Left Illustration */}
         <div className="flex items-center justify-center w-full md:w-1/2 bg-white p-8 order-first md:order-none">
           <img
@@ -134,11 +141,6 @@ const Signup: React.FC<SignupProps> = ({ onAuth }) => {
               />
             )}
 
-            {/* Error Message */}
-            {error && (
-              <p className="text-red-500 text-sm text-center">{error}</p>
-            )}
-
             {/* Submit */}
             <button
               type="submit"
@@ -164,6 +166,26 @@ const Signup: React.FC<SignupProps> = ({ onAuth }) => {
               Log in
             </button>
           </p>
+        </div>
+      </div>
+      
+      {/* Custom Toaster Component */}
+      <div
+        className={`fixed bottom-8 left-1/2 transform -translate-x-1/2 transition-all duration-500 ease-in-out ${
+          toast.isVisible ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
+      >
+        <div
+          className={`px-6 py-3 rounded-full shadow-lg flex items-center gap-3 transition-colors duration-300 ${
+            toast.type === "success"
+              ? "bg-green-500 text-white"
+              : "bg-red-500 text-white"
+          }`}
+        >
+          <span>
+            {toast.type === "success" ? "✅" : "❌"}
+          </span>
+          <span className="font-semibold">{toast.message}</span>
         </div>
       </div>
     </div>

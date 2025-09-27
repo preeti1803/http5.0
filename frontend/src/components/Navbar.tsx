@@ -1,114 +1,96 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import logo from '../assets/images/logo.png';
+import React, { useState, useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { HospitalContext } from "../Context/HospitalContext";
+import logo from "../assets/images/logo.png";
+
+const SearchIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+  </svg>
+);
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
+  const { setHospitals } = useContext(HospitalContext); // ✅ use context to store results
+  const [query, setQuery] = useState("");
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  // ✅ Handle search using backend API
+  const handleSearch = async () => {
+    if (query.trim() === "") return;
+
+    try {
+      // Call your FastAPI backend
+      const res = await fetch(`http://127.0.0.1:5000/hospitals?city=${query}`);
+      const data = await res.json();
+
+      // Save hospitals in context so ResultsPage can access them
+      setHospitals(data);
+
+      // Navigate to results page
+      navigate("/resultpage");
+    } catch (err) {
+      console.error("Error fetching hospitals:", err);
+    }
+  };
+
   const handleLogout = () => {
-    localStorage.removeItem('user');
-    navigate('/');
+    localStorage.removeItem("user");
+    navigate("/");
   };
 
   return (
-    <nav className="bg-white shadow-md">
+    <nav className="bg-white shadow-md border-b-4 border-[#009688]">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
-
           {/* Logo */}
           <div className="flex items-center space-x-2">
-            <img
-              src={logo}
-              alt="Logo"
-              className="w-12 h-12 rounded-full"
-            />
+            <img src={logo} alt="Logo" className="w-12 h-12 rounded-full" />
             <div>
               <h1 className="text-lg font-bold">स्वास्थ्य सहायक</h1>
               <p className="text-xs text-gray-500">Rural Healthcare Assistant</p>
             </div>
           </div>
 
-          {/* Desktop Menu */}
-          <div className="hidden md:flex items-center space-x-6 font-bold">
-            <Link to="/home" className="text-gray-700 hover:text-blue-600">Home</Link>
-            <Link to="/records" className="text-gray-700 hover:text-blue-600">Records</Link>
-            <Link to="/history" className="text-gray-700 hover:text-blue-600">History</Link>
-            <Link to="/alerts" className="text-gray-700 hover:text-blue-600">Alerts</Link>
+          {/* Desktop search */}
+          <div className="hidden md:flex flex-1 justify-center px-6">
+            <div className="relative w-full max-w-2xl">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                <SearchIcon />
+              </span>
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search hospitals by city or name..."
+                className="w-full py-2 pl-10 pr-24 text-sm font-medium text-gray-700 bg-gray-100 border border-transparent rounded-full focus:outline-none focus:ring-2 focus:ring-[#009688]"
+                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+              />
+              <button
+                onClick={handleSearch}
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#009688] text-white px-4 py-1 rounded-full text-sm"
+              >
+                Search
+              </button>
+            </div>
           </div>
 
-          {/* Right Section */}
-          <div className="hidden md:flex items-center space-x-4 font-bold">
-            <Link to="/profile" className="text-gray-700 hover:text-blue-600">👤 Profile</Link>
+          {/* Links */}
+          <div className="hidden md:flex items-center space-x-6 font-bold">
+            <Link to="/home" className="text-gray-700 hover:text-[#009688]">Home</Link>
+            <Link to="/records" className="text-gray-700 hover:text-[#009688]">Records</Link>
+            <Link to="/history" className="text-gray-700 hover:text-[#009688]">History</Link>
+            <Link to="/alerts" className="text-gray-700 hover:text-[#009688]">Alerts</Link>
+            <Link to="/profile" className="text-gray-700 hover:text-[#009688]">👤 Profile</Link>
             <button
               onClick={handleLogout}
-              className="bg-[#009688] text-white px-4 py-2 rounded hover:bg-red-700"
+              className="bg-[#009688] text-white px-4 py-2 rounded-full font-bold hover:bg-[#00796b] transition"
             >
               Logout
             </button>
           </div>
-
-          {/* Mobile Hamburger */}
-          <div className="md:hidden flex items-center">
-            <button
-              onClick={() => setMobileMenuOpen(!isMobileMenuOpen)}
-              className="text-gray-700 focus:outline-none"
-            >
-              {isMobileMenuOpen ? (
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              ) : (
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-              )}
-            </button>
-          </div>
         </div>
       </div>
-
-      {/* Mobile Menu */}
-      {isMobileMenuOpen && (
-        <div className="md:hidden bg-white shadow-md">
-          <Link
-            to="/home"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-          >
-            Home
-          </Link>
-          
-          <Link
-            to="/history"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-          >
-            History
-          </Link>
-                    <Link
-            to="/alerts"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-          >
-            ALerts
-          </Link>
-          <Link
-            to="/profile"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-          >
-            👤 Profile
-          </Link>
-          <button
-            onClick={handleLogout}
-            className="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
-          >
-            Logout
-          </button>
-          
-        </div>
-      )}
     </nav>
   );
 };

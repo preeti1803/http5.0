@@ -16,13 +16,12 @@ import {
   Users,
 } from "lucide-react";
 import { useLanguage } from "../Context/LanguageContext";
-import landing from "../assets/images/landing.jpg"
+import landing from "../assets/images/landing.png";
 
 export function LandingPage() {
   const { selectedLang, setSelectedLang, translations } = useLanguage();
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
-
+  
 
   const navigate = useNavigate();
 
@@ -30,10 +29,10 @@ export function LandingPage() {
   const handleLanguageChange = (langCode: string) => {
     setSelectedLang(langCode);
     setDropdownOpen(false);
-    
 
     // Sync with Google Translate widget
-    const selectEl = document.querySelector<HTMLSelectElement>(".goog-te-combo");
+    const selectEl =
+      document.querySelector<HTMLSelectElement>(".goog-te-combo");
     if (selectEl) {
       selectEl.value = langCode.toLowerCase();
       selectEl.dispatchEvent(new Event("change"));
@@ -43,7 +42,8 @@ export function LandingPage() {
   useEffect(() => {
     // Ensure widget is ready on first load
     if (selectedLang) {
-      const selectEl = document.querySelector<HTMLSelectElement>(".goog-te-combo");
+      const selectEl =
+        document.querySelector<HTMLSelectElement>(".goog-te-combo");
       if (selectEl) {
         selectEl.value = selectedLang.toLowerCase();
         selectEl.dispatchEvent(new Event("change"));
@@ -57,7 +57,6 @@ export function LandingPage() {
     { code: "mr", name: "मराठी" },
     { code: "gu", name: "ગુજરાતી" },
   ];
-
 
   const features = [
     {
@@ -216,18 +215,18 @@ export function LandingPage() {
             </p>
             <button
               className="bg-[#009688] hover:bg-[#00796b] text-white px-8 py-4 text-lg rounded-lg flex items-center gap-2"
-              onClick={() => setModalOpen(true)}
+              onClick={() => navigate("/login")}
             >
               <Play className="w-5 h-5" />
               {translations["Start Now | अभी शुरू करें"] ||
                 "Start Now | अभी शुरू करें"}
             </button>
           </div>
-          <div className="flex justify-center ">
+          <div className="rounded-2xl shadow-xl max-w-6xl w-full overflow-hidden">
             <img
-              src= {landing}
-              alt="Doctor and family using mobile health technology"
-              className="rounded-2xl shadow-xl max-w-md w-full transform scale-105"
+              src={landing}
+              alt="demo"
+              className="w-full transform scale-105"
             />
           </div>
         </div>
@@ -394,43 +393,7 @@ export function LandingPage() {
       </div>
 
       {/* Modal */}
-      {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full relative">
-            <button
-              className="absolute top-4 right-4 text-gray-500 hover:text-gray-800"
-              onClick={() => setModalOpen(false)}
-            >
-              ✕
-            </button>
-            <h2 className="text-2xl font-semibold mb-4 text-gray-900">
-              Select Your Language
-            </h2>
-            <div className="flex flex-col gap-3">
-              {languages.map((lang) => (
-                <button
-                  key={lang.code}
-                  onClick={() => handleLanguageChange(lang.code)}
-                  className={`w-full px-4 py-3 rounded-lg border ${
-                    selectedLang === lang.code
-                      ? "border-[#009688] bg-[#009688]/20"
-                      : "border-gray-300 hover:bg-gray-100"
-                  } text-left`}
-                >
-                  {lang.name}
-                </button>
-              ))}
-            </div>
-            <button
-              className="mt-6 w-full bg-[#009688] hover:bg-[#00796b] text-white px-4 py-3 rounded-lg flex items-center justify-center gap-2"
-              onClick={() => navigate("/login")}
-            >
-              <Play className="w-5 h-5" />
-              Get Started
-            </button>
-          </div>
-        </div>
-      )}
+
     </div>
   );
 }

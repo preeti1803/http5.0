@@ -40,7 +40,7 @@ const PreHeader: React.FC = () => {
   }, []);
 
   return (
-    <div className="bg-green-600 px-6 py-2 hidden md:block w-full">
+    <div className="bg-black-600 px-3 py-1 text-ts hidden md:block h-8 ">
       <div className="flex justify-between items-center">
         {/* Left Section (Logo + Text if needed) */}
         <div className="flex items-center space-x-2">

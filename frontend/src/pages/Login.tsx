@@ -1,125 +1,198 @@
 import React, { useState } from "react";
+import { Mic } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import illustration from "../assets/images/illustration.png";
+import logo from "../assets/images/logo.png"
 
-interface LoginProps {
-  onAuth: () => void;
+// --- Firebase Imports ---
+// This section imports the necessary functions from the Firebase SDK.
+import { RecaptchaVerifier, signInWithPhoneNumber, ConfirmationResult } from "firebase/auth";
+import { auth } from "../services/firebase"; // Make sure this path is correct
+
+// This is a TypeScript feature to let us add 'recaptchaVerifier' to the global window object.
+declare global {
+  interface Window {
+    recaptchaVerifier: any;
+  }
 }
 
-const Login: React.FC<LoginProps> = ({ onAuth }) => {
+const Login: React.FC = () => {
+  // --- Component State ---
+  const [language, setLanguage] = useState<"en" | "hi">("en");
+  const [otpSent, setOtpSent] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("+91");
+  const [confirmationResult, setConfirmationResult] = useState<ConfirmationResult | null>(null);
   const navigate = useNavigate();
 
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [otp, setOtp] = useState("");
-  const [showOtp, setShowOtp] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  // --- Translations Object ---
+  const translations = {
+    en: {
+        helpline: "National Health Helpline: 1075",
+        helpline_hi: "स्वास्थ्य हेल्पलाइन: १०७५",
+        title: "Welcome to SwasthyaSahayak",
+        subtitle: "स्वास्थ्यसहायक में आपका स्वागत है",
+        loginWith: "Login with Mobile Number (OTP)",
+        sendOtp: "Send OTP",
+        enterOtp: "Enter OTP",
+        login: "Login",
+        or: "OR",
+        micText: "Speak your name or PIN in your local language",
+        readOut: "Read Out Loud",
+        footer: "Works even in low/no internet with PWA support",
+        footer_hi: "PWA सपोर्ट के साथ कम/बिना इंटरनेट में भी काम करता है",
+    },
+    hi: {
+        helpline: "राष्ट्रीय स्वास्थ्य हेल्पलाइन: १०७५",
+        helpline_hi: "National Health Helpline: 1075",
+        title: "स्वास्थ्यसहायक में आपका स्वागत है",
+        subtitle: "Welcome to SwasthyaSahayak",
+        loginWith: "मोबाइल नंबर से लॉगिन करें (OTP)",
+        sendOtp: "OTP भेजें",
+        enterOtp: "OTP दर्ज करें",
+        login: "लॉगिन करें",
+        or: "या",
+        micText: "अपना नाम या PIN अपनी स्थानीय भाषा में बोलें",
+        readOut: "जोर से पढ़ें",
+        footer: "कम/बिना इंटरनेट में भी काम करता है (PWA सपोर्ट)",
+        footer_hi: "Works even in low/no internet with PWA support",
+    },
+  };
+  const t = translations[language];
 
-  // Show OTP input (mock)
-  const handleSendOtp = (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-
-    if (!phoneNumber.match(/^[0-9]{10}$/)) {
-      setError("Enter a valid 10-digit phone number");
-      return;
+  // --- reCAPTCHA Setup ---
+  // This function creates the invisible reCAPTCHA widget required by Firebase.
+  const setupRecaptcha = () => {
+    if (!window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+        'size': 'invisible',
+        'callback': () => {
+          // This callback is executed when the reCAPTCHA is solved.
+        }
+      });
     }
-
-    setShowOtp(true); // Show OTP input
   };
 
-  // Low-fidelity login: accept only 123456
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
+  // --- OTP Handlers ---
+  // Function to request the OTP from Firebase.
+  const handleSendOtp = async () => {
+    try {
+      setupRecaptcha(); // Sets up the invisible reCAPTCHA
+      const verifier = window.recaptchaVerifier;
+      const result = await signInWithPhoneNumber(auth, phoneNumber, verifier);
+      setConfirmationResult(result);
+      setOtpSent(true);
+      console.log("OTP sent successfully!");
+    } catch (error) {
+      console.error("Error sending OTP:", error);
+      alert("Failed to send OTP. Please check the phone number and try again.");
+    }
+  };
 
-    if (otp === "123456") {
-      const user = { phoneNumber };
-      localStorage.setItem("user", JSON.stringify(user));
-
-      onAuth();
-      
-      navigate("/home");
+  // Function to verify the OTP and sign the user in.
+  const handleVerifyOtp = async () => {
+    if (otp.trim().length === 6 && confirmationResult) {
+      try {
+        await confirmationResult.confirm(otp);
+        console.log("Login successful!");
+        navigate("/home");
+      } catch (error) {
+        console.error("Error verifying OTP:", error);
+        alert("Invalid OTP. Please try again.");
+      }
     } else {
-      setError("Invalid OTP. Use 123456 for demo.");
+      alert("Please enter a valid 6-digit OTP!");
     }
   };
 
+  // --- JSX Rendering ---
   return (
-    <div className="min-h-screen flex items-center justify-center bg-blue-500 px-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl flex flex-col md:flex-row overflow-hidden">
-        {/* Left Illustration */}
-        <div className="flex items-center justify-center w-full md:w-1/2 bg-white p-8 order-1 md:order-none">
-          <img
-            src={illustration}
-            alt="Login Illustration"
-            className="w-60 h-60 md:w-96 md:h-96 object-contain transform scale-105 md:scale-110"
-          />
+    <div className="min-h-screen flex flex-col bg-gray-50">
+      {/* Top Bar and Navbar */}
+      <div className="bg-blue-600 text-white text-sm px-4 py-2 flex justify-between">
+        <span>{t.helpline}</span>
+        <span>{t.helpline_hi}</span>
+      </div>
+      <nav className="bg-teal-600 px-6 py-3 flex justify-between items-center">
+        <div className="flex items-center space-x-2">
+         <img src= {logo} alt="Logo" className="h-10 w-10 rounded-full" />
+          <div className="text-white font-semibold text-lg">SwasthyaSahayak</div>
         </div>
+        <select value={language} onChange={(e) => setLanguage(e.target.value as "en" | "hi")} className="px-3 py-1 border rounded-md text-sm">
+          <option value="en">English</option>
+          <option value="hi">हिन्दी</option>
+        </select>
+      </nav>
 
-        {/* Login Form */}
-        <div className="w-full md:w-1/2 p-8 flex flex-col justify-center order-2">
-          <h2 className="text-2xl font-bold text-gray-800 text-center mb-2">
-            Welcome Back
-          </h2>
-          <p className="text-sm text-gray-600 text-center mb-6">
-            Login with your phone number
-          </p>
+      {/* Main Content */}
+      <div className="flex flex-1 items-center justify-center px-4">
+        <div className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md text-center">
+          
+          {/* This empty div is the container for Firebase's invisible reCAPTCHA. It must be present. */}
+          <div id="recaptcha-container"></div>
+          
+          <h2 className="text-xl font-semibold mb-2">{t.title}</h2>
+          <p className="text-green-600 text-sm mb-6">{t.subtitle}</p>
 
-          <form
-            onSubmit={showOtp ? handleLogin : handleSendOtp}
-            className="space-y-4"
-          >
-            {/* Phone Input */}
-            {!showOtp && (
-              <input
-                type="tel"
-                required
-                placeholder="Phone Number"
-                pattern="[0-9]{10}"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
-              />
-            )}
+          {/* Conditional rendering for Phone Number input or OTP input */}
+          {!otpSent ? (
+            <>
+              <p className="mb-2 text-gray-700">{t.loginWith}</p>
+              <div className="flex items-center space-x-2 mb-4">
+                <input
+                  type="tel"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  placeholder="+91"
+                  className="flex-1 border rounded-lg px-4 py-2 focus:ring-2 focus:ring-teal-500"
+                />
+                <button
+                  onClick={handleSendOtp}
+                  className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700"
+                >
+                  {t.sendOtp}
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <p className="mb-2 text-gray-700">{t.enterOtp}</p>
+              <div className="flex items-center space-x-2 mb-4">
+                <input
+                  type="text"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  placeholder="123456"
+                  className="flex-1 border rounded-lg px-4 py-2 focus:ring-2 focus:ring-teal-500"
+                />
+                <button
+                  onClick={handleVerifyOtp}
+                  className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700"
+                >
+                  {t.login}
+                </button>
+              </div>
+            </>
+          )}
 
-            {/* OTP Input */}
-            {showOtp && (
-              <input
-                type="text"
-                required
-                placeholder="Enter OTP"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-              />
-            )}
-
-            {/* Error Message */}
-            {error && (
-              <p className="text-red-500 text-sm text-center">{error}</p>
-            )}
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={loading}
-              // onClick={() => navigate("/home")}
-              className="w-full bg-[#009688] text-white font-semibold py-3 rounded-full hover:bg-[#009688] transition-colors disabled:opacity-50"
-            >
-              {showOtp ? "Login" : "Continue"}
-            </button>
-          </form>
-
-          <p className="mt-6 text-center text-sm text-gray-600">
-            Don’t have an account?{" "}
-            <button
-              onClick={() => navigate("/signup")}
-              className="text-blue-600 hover:text-blue-800 font-medium"
-            >
-              Sign up
-            </button>
-          </p>
+          {/* Divider and other UI elements */}
+          <div className="flex items-center my-4">
+            <div className="flex-grow border-t border-gray-300"></div>
+            <span className="px-3 text-gray-500 text-sm">{t.or} | {translations.hi.or}</span>
+            <div className="flex-grow border-t border-gray-300"></div>
+          </div>
+          <button className="bg-teal-600 text-white p-4 rounded-full shadow-md hover:bg-teal-700 mb-3">
+            <Mic size={28} />
+          </button>
+          <p className="text-gray-700 text-sm mb-4">{t.micText}</p>
+          <div className="flex items-center justify-center space-x-2 mb-4">
+            <label className="inline-flex items-center cursor-pointer">
+              <input type="checkbox" className="sr-only peer" />
+              <div className="w-10 h-6 bg-gray-200 rounded-full peer peer-checked:bg-teal-600 relative after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:w-5 after:h-5 after:bg-white after:rounded-full after:transition-all peer-checked:after:translate-x-4"></div>
+            </label>
+            <span className="text-sm text-gray-700">{t.readOut}</span>
+          </div>
+          <p className="text-xs text-gray-500">{t.footer}</p>
+          <p className="text-xs text-teal-600">{t.footer_hi}</p>
         </div>
       </div>
     </div>

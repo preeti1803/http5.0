@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { LanguageProvider } from './Context/LanguageContext';
 import { LandingPage } from './pages/LandingPage';
-import Login from './pages/Login';
+import Login from "./pages/Login"
 import Home from './pages/Home';
 import Analysis from './pages/Analysis';
 import Result from './pages/Result';
@@ -17,6 +17,15 @@ import HealthTips from './pages/WellBeing';
 import { History } from './pages/History';
 import { AlertsNotifications } from './pages/Alerts';
 import { MyRecords } from './pages/Records';
+import { AuthProvider } from './Context/AuthContext';
+import ProtectedRoute from './Context/ProtectedRoute';
+import PreHeader from './components/PreHeader';
+import ResultPage from './pages/ResultPage';
+
+import {getToken} from "firebase/messaging"
+import {auth} from "./services/firebase"
+
+
 
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   const isAuthenticated = !!localStorage.getItem('user');
@@ -41,6 +50,7 @@ const AppLayout: React.FC<{ children: React.ReactNode ;  }> = ({ children }) => 
 
   return (
     <div className="min-h-screen bg-gray-50">
+  
       {showNavbar && <Navbar />}
      
       {children}
@@ -50,6 +60,21 @@ const AppLayout: React.FC<{ children: React.ReactNode ;  }> = ({ children }) => 
 };
 
 function App() {
+const FirebaseToken = () => {
+  useEffect(() => {
+    Notification.requestPermission()
+      .then(() => getToken(auth, { vapidKey: "BOb-7oG3X97Uvm8ivyhwVSk_y9ja5MJpvSsrq4Rt0DzCSKpsD9VGYcJ45oAr2sw0PLYG42s6mZ544-aoml72LKs" }))
+      .then((token: string | null) => {
+        console.log("Token:", token);
+      })
+      .catch((err: unknown) => {
+        console.error("Error getting token", err);
+      });
+  }, []);
+
+
+  return null;
+};
   const [isListening, setIsListening] = React.useState(false);
 
 
@@ -117,16 +142,20 @@ function App() {
     <LanguageProvider>
       <BrowserRouter>
         <AppLayout>
+          <AuthProvider>
+        
           <Routes>
             <Route path="/" element={<LandingPage />} />
-            <Route path="/login" element={<Login onAuth={() => window.location.reload()} />} />
-            <Route path="/signup" element={<Signup onAuth={() => window.location.reload()} />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
             <Route path="/healthtips" element={<HealthTips />} />
             <Route path="/history" element={<History />} />
             <Route path="/edit-profile" element={<EditProfile />} />
             <Route path="/profile" element={<Profile dailyStreak={2} />} />
             <Route path="/alerts" element={<AlertsNotifications />} />
             <Route path="/records" element={<MyRecords />} />
+            <Route path = "/resultpage" element = {<ResultPage/>}/>
+            <Route element ={<ProtectedRoute />}/>
 
             <Route
               path="/home"
@@ -199,7 +228,9 @@ function App() {
             {/* Fallback */}
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
+          </AuthProvider>
         </AppLayout>
+      
       </BrowserRouter>
     </LanguageProvider>
   );

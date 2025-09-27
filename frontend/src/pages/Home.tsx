@@ -83,12 +83,12 @@ const Home: React.FC<HomeScreenProps> = ({
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-slate-50">
       {/* Emergency Bar */}
-      <div
-        className="bg-red-500 text-white text-center py-3 cursor-pointer hover:bg-red-600 transition"
+      {/* <div
+        className="bg-blue-600 text-white text-center py-3 cursor-pointer hover:bg-red-600 transition"
         onClick={onEmergencyCall}
       >
         🚨 Emergency? Call 108 Immediately
-      </div>
+      </div> */}
 
       {/* Header */}
       <header className="text-center py-10 px-4">
@@ -102,7 +102,7 @@ const Home: React.FC<HomeScreenProps> = ({
       <section className="flex flex-col items-center py-8">
         <button
           onClick={() => navigate("/voice-input")}
-          className="w-32 h-32 flex items-center justify-center rounded-full bg-blue-500 hover:bg-blue-600 text-white shadow-lg transition"
+          className="w-32 h-32 flex items-center justify-center rounded-full bg-teal-600 hover:bg-teal-800 text-white shadow-lg transition"
         >
           <Mic size={48} />
         </button>
@@ -150,7 +150,7 @@ const Home: React.FC<HomeScreenProps> = ({
 
       {/* Health Tip */}
       <section className="max-w-xl mx-auto px-4 py-8">
-        <div className="rounded-2xl bg-gradient-to-r from-blue-500 to-blue-600 text-white p-6 text-center shadow">
+        <div className="rounded-2xl bg-gradient-to-r from-teal-600 to-teal-900 text-white p-6 text-center shadow">
           <h3 className="text-lg font-semibold mb-2">💡 Health Tip of the Day</h3>
           <p className="text-base">{randomTip}</p>
         </div>
@@ -219,7 +219,7 @@ interface StepCardProps {
 const StepCard: React.FC<StepCardProps> = ({ step, title, description }) => {
   return (
     <div className="bg-white shadow-md rounded-xl p-6 flex flex-col items-center hover:shadow-xl transition">
-      <div className="w-12 h-12 flex items-center justify-center rounded-full bg-blue-500 text-white text-lg font-bold mb-4">
+      <div className="w-12 h-12 flex items-center justify-center rounded-full bg-teal-600 text-white text-lg font-bold mb-4">
         {step}
       </div>
       <h3 className="text-lg font-semibold text-slate-800 mb-2">{title}</h3>
